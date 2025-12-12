@@ -43,20 +43,17 @@ LFLAGS = -T$(LD_SCRIPT)
 
 TARGET = $(BUILD_DIR)/$(PROJECT).elf
 
-.PHONY: all clean build_dirs flash 
+.PHONY: all clean flash 
 
-all: $(TARGET) build_dirs
+all: $(TARGET) 
 
-build_dirs:
-	mkdir -p $(BUILD_DIR)/$(SRC_DIR)
-
-$(BUILD_DIR)/$(SRC_DIR)/%.o: $(SRC_DIR)/%.c | build_dirs
+$(BUILD_DIR)/$(SRC_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)/$(SRC_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@ 
 
-$(BUILD_DIR)/$(SRC_DIR)/%.o: $(CMSIS_DIR)/%.c | build_dirs
+$(BUILD_DIR)/$(SRC_DIR)/%.o: $(CMSIS_DIR)/%.c | $(BUILD_DIR)/$(SRC_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@ 
 
-$(BUILD_DIR)/$(SRC_DIR)/%.o: %.s | build_dirs 
+$(BUILD_DIR)/$(SRC_DIR)/%.o: %.s | $(BUILD_DIR)/$(SRC_DIR)
 	$(CC) $(ASFLAGS) -c $< -o $@ 
 
 $(TARGET): $(OBJS) 
@@ -67,7 +64,9 @@ flash:
 	$(OBJCOPY) -O binary $(TARGET) $(BUILD_DIR)/$(PROJECT).bin  
 	st-flash write $(BUILD_DIR)/$(PROJECT).bin 0x08000000
 
-		
+$(BUILD_DIR)/$(SRC_DIR):
+	mkdir -p $@
+
 clean: 
 	rm -rf $(BUILD_DIR)
 
