@@ -1,1 +1,1 @@
-[work](./work.gif)
+![work](./work.gif)
